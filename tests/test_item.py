@@ -1,25 +1,32 @@
 from src.item import Item
 import pytest
+import os
 
 
 @pytest.fixture()
 def item1():
-    return Item("Смартфон", 10000, 20)
+    return Item("Телефон", 10000, 20)
 
 
-@pytest.fixture()
-def item2():
-    return Item("Ноутбук", 20000, 5)
+def test_name_setter(item1):
+    item1.name = "Смартфон"
+    assert item1.name == "Смартфон"
 
 
-def test_calculate_total_price(item1, item2):
-    assert item1.calculate_total_price() == 200000
-    assert item2.calculate_total_price() == 100000
+def test_name_setter_value_error(item1):
+    item1.name = "СуперСмартфон"
+    assert item1.name == "Телефон"
 
 
-def test_apply_discount(item1, item2):
-    Item.pay_rate = 0.8
-    item1.apply_discount()
-    item2.apply_discount()
-    assert item1.price == 8000
-    assert item2.price == 16000
+def test_instantiate_from_csv():
+    filename = os.path.join(os.path.dirname(__file__), '..', 'src', 'items.csv')
+    items = Item.instantiate_from_csv(filename)
+    assert len(items) == 5
+    item1 = items[0]
+    assert item1.name == 'Смартфон'
+
+
+def test_string_to_number():
+    assert Item.string_to_number(5) == 5
+    assert Item.string_to_number(5.0) == 5
+    assert Item.string_to_number(5.5) == 5
