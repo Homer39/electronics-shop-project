@@ -1,5 +1,6 @@
 import csv
 
+
 class Item:
     """
     Класс для представления товара в магазине.
@@ -12,6 +13,12 @@ class Item:
         self.price = price
         self.quantity = quantity
         Item.all.append(self)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}("{self.__name}", "{self.price}", "{self.quantity}")'
+
+    def __str__(self):
+        return self.__name
 
     def calculate_total_price(self) -> float:
         """
