@@ -1,32 +1,19 @@
-from src.item import Item
-from src.phone import Phone
+from src.keyboard import Keyboard
 import pytest
 
 
 @pytest.fixture()
-def item1():
-    return Item("Телефон", 10000, 20)
+def kb():
+    return Keyboard('Dark Project KD87A', 9600, 5)
 
 
-@pytest.fixture()
-def phone1():
-    return Phone("iPhone 14", 120_000, 5, 2)
+def test_str(kb):
+    assert str(kb) == "Dark Project KD87A"
+    assert str(kb.keylang) == "EN"
 
 
-def test_repr(phone1):
-    assert repr(phone1) == 'Phone("iPhone 14", 120000, 5, 2)'
-
-
-def test_str(phone1):
-    assert str(phone1) == 'iPhone 14'
-
-
-def test_add(item1, phone1):
-    assert item1 + phone1 == 25
-    assert phone1 + phone1 == 10
-    assert phone1 + 5 == None
-
-
-def test_value_error(phone1):
-    with pytest.raises(ValueError):
-        phone1.number_of_sim = 0
+def test_change_lang(kb):
+    kb.change_lang()
+    assert str(kb.keylang) == "RU"
+    kb.change_lang().change_lang()
+    assert str(kb.keylang) == "RU"

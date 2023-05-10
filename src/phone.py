@@ -19,3 +19,7 @@ class Phone(Item):
             raise ValueError("Количество физических SIM-карт должно быть целым числом больше нуля.")
         else:
             self._number_of_sim = new_number_of_sim
+
+
+phone1 = Phone("iPhone 14", 120_000, 5, 2)
+phone1.number_of_sim = 0
