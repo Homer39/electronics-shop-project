@@ -1,6 +1,6 @@
 from src.item import Item
+from src.phone import Phone
 import pytest
-import os
 
 
 @pytest.fixture()
@@ -8,33 +8,25 @@ def item1():
     return Item("Телефон", 10000, 20)
 
 
-def test_name_setter(item1):
-    item1.name = "Смартфон"
-    assert item1.name == "Смартфон"
+@pytest.fixture()
+def phone1():
+    return Phone("iPhone 14", 120_000, 5, 2)
 
 
-def test_name_setter_value_error(item1):
-    item1.name = "СуперСмартфон"
-    assert item1.name == "Телефон"
+def test_repr(phone1):
+    assert repr(phone1) == 'Phone("iPhone 14", 120000, 5, 2)'
 
 
-def test_instantiate_from_csv():
-    filename = os.path.join(os.path.dirname(__file__), '..', 'src', 'items.csv')
-    items = Item.instantiate_from_csv(filename)
-    assert len(items) == 5
-    item1 = items[0]
-    assert item1.name == 'Смартфон'
+def test_str(phone1):
+    assert str(phone1) == 'iPhone 14'
 
 
-def test_string_to_number():
-    assert Item.string_to_number(5) == 5
-    assert Item.string_to_number(5.0) == 5
-    assert Item.string_to_number(5.5) == 5
+def test_add(item1, phone1):
+    assert item1 + phone1 == 25
+    assert phone1 + phone1 == 10
+    assert phone1 + 5 == None
 
 
-def test_repr(item1):
-    assert repr(item1) == 'Item("Телефон", "10000", "20")'
-
-
-def test_str(item1):
-    assert str(item1) == item1.name
+def test_value_error(phone1):
+    with pytest.raises(ValueError):
+        phone1.number_of_sim = 0
