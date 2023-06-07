@@ -1,6 +1,10 @@
 import csv
 
 
+class InstantiateCSVError(Exception):
+    pass
+
+
 class Item:
     """
     Класс для представления товара в магазине.
@@ -10,8 +14,8 @@ class Item:
 
     def __init__(self, name: str, price: float, quantity: int) -> None:
         self.__name = name
-        self.price = price
-        self.quantity = quantity
+        self.price = float(price)
+        self.quantity = int(quantity)
         Item.all.append(self)
 
     def __add__(self, other):
@@ -52,15 +56,39 @@ class Item:
 
     @classmethod
     def instantiate_from_csv(cls, filepath='items.csv'):
-        goods = []
-        with open(filepath, newline='') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                name, price, quantity = row['name'], row['price'], row['quantity']
-                item = cls(name, price, quantity)
-                goods.append(item)
-        return goods
+        try:
+            with open(filepath, newline='', encoding='windows-1252') as f:
+                reader = csv.DictReader(f)
+                goods = []
+                for row in reader:
+                    if len(row) == 3 and ('name' in reader.fieldnames and 'price' in reader.fieldnames
+                                          and 'quantity' in reader.fieldnames):
+                        item = cls(row['name'], row['price'], row['quantity'])
+                        goods.append(item)
+                    else:
+                        raise InstantiateCSVError
+        except FileNotFoundError:
+            print(f'Отсутствует файл {filepath}')
+        except InstantiateCSVError:
+            print(f'Файл {filepath} поврежден')
+        else:
+            return goods
 
     @staticmethod
     def string_to_number(num):
         return int(num)
+
+
+if __name__ == '__main__':
+    # test1 Рабочий файл
+    item = Item.instantiate_from_csv('items.csv')
+    item1 = item[0]
+    assert item1.price == 100
+
+    # test2 Сломанный файл
+    item_broke = Item.instantiate_from_csv('broke_items.csv')
+    # Файл broke_items.csv поврежден
+
+    # test3 Отсутствует файл
+    item_not_found = Item.instantiate_from_csv('fff')
+    # Отсутствует файл fff
